@@ -13,9 +13,7 @@ if [[ -z "$1" ]]; then
     exit 1
 fi
 
-cd $(dirname "$BASH_SOURCE")
-
-command="../scripts/$1"
+command="$(dirname "$BASH_SOURCE")/../scripts/$1"
 
 if [[ ! -f "$command" ]]; then
     echo aoc: $1 command not found >&2

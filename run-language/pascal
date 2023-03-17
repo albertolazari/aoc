@@ -1,0 +1,6 @@
+#!/bin/bash
+
+fpc part-$1.pas > compiler.log && {
+    rm part-$1.o
+    ./part-$1
+}

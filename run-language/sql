@@ -1,0 +1,3 @@
+#!/bin/bash
+
+psql postgres -v pwd=$PWD -v input=$2 -qzf part-$1.sql | tail -n 3 | head -n 1 | sed 's/[ ]*//'

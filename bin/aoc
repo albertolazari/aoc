@@ -3,9 +3,12 @@
 print_help() {
     echo 'usage: aoc <command> [args]'
     echo commands:
-    echo '  input'
-    echo '  lang'
-    echo '  run'
+
+    local command
+    for command in $(dirname "$BASH_SOURCE")/../scripts/*.sh; do
+        echo "  $(basename ${command/.sh})"
+    done
+    echo '  help'
 }
 
 if [[ -z "$1" ]]; then
@@ -13,14 +16,19 @@ if [[ -z "$1" ]]; then
     exit 1
 fi
 
-command="$(dirname "$BASH_SOURCE")/../scripts/$1"
+if [[ "$1" =~ ^[-]?[-]?help|^[-]?h ]]; then
+    print_help
+    exit
+fi
 
-if [[ ! -f "$command" ]]; then
-    echo aoc: $1 command not found >&2
+command="$1"
+script="$(dirname "$BASH_SOURCE")/../scripts/$command.sh"
+shift
+
+if [[ ! -f "$script" ]]; then
+    echo aoc: $command command not found >&2
     print_help >&2
     exit 1
 fi
 
-# Get rid of $1, which is the command to run
-shift
-"$command" "$@"
+"$script" "$@"

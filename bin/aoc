@@ -1,11 +1,13 @@
 #!/bin/bash -e
 
+script_dir="$(dirname "$(readlink -f "$BASH_SOURCE")")"
+
 print_help() {
     echo 'usage: aoc <command> [args]'
     echo commands:
 
     local command
-    for command in $(dirname "$BASH_SOURCE")/../scripts/*.sh; do
+    for command in "$script_dir"/../scripts/*.sh; do
         echo "  $(basename ${command/.sh})"
     done
     echo '  help'
@@ -22,7 +24,7 @@ if [[ "$1" =~ ^[-]?[-]?help|^[-]?h ]]; then
 fi
 
 command="$1"
-script="$(dirname "$BASH_SOURCE")/../scripts/$command.sh"
+script="$script_dir/../scripts/$command.sh"
 shift
 
 if [[ ! -f "$script" ]]; then

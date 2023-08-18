@@ -1,3 +1,6 @@
 #!/bin/bash
 
-gfortran part-$1.f -o part-$1 > compiler.log && ./part-$1
+gfortran part-$1.f -o part-$1 &> compiler.log && ./part-$1
+
+# Remove compiled modules
+rm *.mod

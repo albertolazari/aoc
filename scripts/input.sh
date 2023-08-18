@@ -1,6 +1,7 @@
 #!/bin/bash -e
 
 script_dir=$(dirname $0)
+cookie=$script_dir/../user-session
 DAY_PATTERN='day-'
 
 if [[ ! $(basename $PWD) =~ ^day-[0-9]+$ ]]
@@ -11,10 +12,10 @@ fi
 
 day=$(basename $PWD | sed "s/^$DAY_PATTERN//")
 
-if [[ ! -f $script_dir/user-session ]]
+if [[ ! -f $cookie ]]
 then
     echo Error: you need to copy your session in tools/user-session
     exit 1
 fi
 
-curl https://adventofcode.com/2022/day/$day/input --cookie "session=$(cat $script_dir/user-session)" > input
+curl -s https://adventofcode.com/2022/day/$day/input --cookie "session=$(< $cookie)" > input

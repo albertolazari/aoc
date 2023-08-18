@@ -4,7 +4,7 @@ script_dir=$(dirname "$0")
 
 input_file=input
 part=1
-UPDATE_PART='part=$([[ -f part-2$($script_dir/lang -e $language) ]] && echo 2 || echo 1)'
+UPDATE_PART='part=$([[ -f part-2$($script_dir/lang.sh -e $language) ]] && echo 2 || echo 1)'
 
 print_help() {
     echo 'usage: run [-dh] [-p 1|2] [-l LANGUAGE]'
@@ -37,7 +37,7 @@ if ! compgen -G "part-*.*" > /dev/null; then
 fi
 
 # Retrieves the current selected language
-language=$($script_dir/lang)
+language=$($script_dir/lang.sh)
 
 [[ $(bc -e "$(echo "$language" | wc -l) > 1") == 1 ]] && [[ $(echo "$language" | grep default) ]] && language=$(echo "$language" | grep default | sed -e 's/ (default)//')
 

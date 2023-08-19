@@ -136,6 +136,7 @@ fi
 
 if $current_only && [[ $language = '' ]]; then
     echo Error: multiple languages detected >&2
-    echo "use 'aoc lang -s LANG' to set the current language for this day" >&2
+    echo "run the solutions with 'aoc run -l LANGUAGE'" >&2
+    echo "or set the current language for this day with 'aoc lang -s LANGUAGE'" >&2
     exit 1
 fi

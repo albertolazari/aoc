@@ -1,20 +1,24 @@
 #!/bin/bash -e
 
-script_dir=$(dirname $0)
-cookie=$script_dir/../user-session
-DAY_PATTERN='day-'
-
-if [[ ! $(basename $PWD) =~ ^day-[0-9]+$ ]]
-then
-    echo Error: you need to be in a ${DAY_PATTERN}n/ directory
+if [[ -n "$1" ]]; then
+    echo usage: aoc input >&2
     exit 1
 fi
 
-day=$(basename $PWD | sed "s/^$DAY_PATTERN//")
+script_dir=$(dirname $BASH_SOURCE)
+cookie=$script_dir/../user-session
+day_pattern='day-'
+
+if [[ ! "$(basename $PWD)" =~ "^${day_pattern}[0-9][0-9]$" ]]; then
+    echo "Error: you need to be in a '${day_pattern}DD/' directory" >&2
+    exit 1
+fi
+
+day=$(basename $PWD | sed "s/^$day_pattern//")
 
 if [[ ! -f $cookie ]]
 then
-    echo Error: you need to copy your session in tools/user-session
+    echo "Error: you need to copy your session in 'aoc/user-session'" >&2
     exit 1
 fi
 

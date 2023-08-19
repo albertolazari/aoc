@@ -1,23 +1,22 @@
 #!/bin/bash -e
 
-script_dir=$(dirname $0)
+script_dir=$(dirname $BASH_SOURCE)
 
 print_help () {
-    echo usage: lang [-s LANGUAGE] [-e LANGUAGE] [-Eh]
-    echo Shell options:
-    echo '  -e  return the passed language extension'
-    echo '  -E  return the current language extension'
-    echo '  -h  print this message'
-    echo '  -s  set the language for the day'
+    echo usage: lang [-cEh] [-s LANGUAGE] [-e LANGUAGE]
+    echo options:
+    echo '-c    print the current language (if any)'
+    echo '-e    return the passed language extension'
+    echo '-E    return the current language extension'
+    echo '-h    print this message'
+    echo '-s    set the language for the day'
 }
 
 set_language () {
     language=$1
 
-    if [[ -f $script_dir/languages/run-$language ]]
-    then
+    if [[ -f $script_dir/../run-language/$language ]]; then
         echo $language > .lang
-        exit 0
     else
         echo Error: the selected language has not yet been configured >&2
         exit 1
@@ -71,38 +70,72 @@ language_of () {
 }
 
 load_options() {
-    while getopts :e:Ehs: flag
-    do
-        case "${flag}" in
-            e) echo .$(extension_of $OPTARG); exit 0;;
-            E) [[ $language != '' ]] && echo .$(extension_of $language); exit 0;;
-            s) set_language $OPTARG;;
-            h) print_help; exit 0;;
-            *) print_help; exit 1;;
+    while getopts :ce:Ehs: opt; do
+        case "$opt" in
+            c)  current_only=true
+                ;;
+            e)  echo .$(extension_of $OPTARG)
+                exit 0
+                ;;
+            E)  [[ $language != '' ]] && echo .$(extension_of $language)
+                exit 0
+                ;;
+            s)  set_language $OPTARG
+                exit 0
+                ;;
+            h)  print_help
+                exit 0
+                ;;
+            *)  print_help
+                exit 1
+                ;;
         esac
     done
 }
 
-language=''
+current_only=false
 
-[[ -f .lang ]] && language=$(cat .lang)
+[[ -f .lang ]] && language=$(< .lang)
 
-languages=''
+if ! ls part-[12].* &> /dev/null; then
+    echo Error: no solution found >&2
+    exit 1
+fi
 
+languages=()
 # Retrieve languages from the file extension
-for extension in $(ls -1q part-{1,2}.* 2> /dev/null | sed -E 's/^.*\.(.*)$/\1/' | sort -u)
-do
+for extension in $(ls part-[12].* | sed 's/.*\.\(.*\)$/\1/' | sort -u); do
     l=$(language_of $extension)
-    if [[ $l != $language ]]
-    then
-        languages="$languages$l"$'\n'
-    else
-        languages="$languages$l (default)"$'\n'
-    fi
+    languages+=($l)
 done
 
-languages=$(echo "$languages" | sed -E 's/\n$//')
+if (( ${#languages[@]} == 1 )); then
+    language=${languages[0]}
+fi
 
 load_options "$@"
 
-echo "$languages"
+if (( ${#languages[@]} < 1 )); then
+    echo Error: no language recognized >&2
+    exit 1
+fi
+
+if (( ${#languages[@]} == 1 )); then
+    echo $language
+else
+    for l in ${languages[@]}; do
+        if ! $current_only; then
+            echo $l $([[ $l != $language ]] || echo '(current)')
+        else
+            if [[ $l = $language ]]; then
+                echo $l
+            fi
+        fi
+    done
+fi
+
+if $current_only && [[ $language = '' ]]; then
+    echo Error: multiple languages detected >&2
+    echo "use 'aoc lang -s LANG' to set the current language for this day" >&2
+    exit 1
+fi

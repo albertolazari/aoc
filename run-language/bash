@@ -1,3 +1,2 @@
-#!/bin/bash
-
+#!/bin/bash -e
 ./part-$1.sh

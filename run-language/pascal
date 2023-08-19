@@ -1,6 +1,5 @@
-#!/bin/bash
-
-fpc part-$1.pas > compiler.log && {
+#!/bin/bash -e
+if fpc part-$1.pas > compiler.log; then
     rm part-$1.o
     ./part-$1
-}
+fi

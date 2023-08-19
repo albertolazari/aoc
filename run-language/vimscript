@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 
 # Run the script, redirecting to stdout and trimming extra spaces
 vim -e +'redir>>/dev/stdout' +"source part-$1.vim" +'q!' - | grep -v '^ *$'

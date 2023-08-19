@@ -1,0 +1,142 @@
+#!/bin/bash -e
+
+script_dir=$(dirname $BASH_SOURCE)
+
+print_help () {
+    echo usage: lang [-cEh] [-s LANGUAGE] [-e LANGUAGE]
+    echo options:
+    echo '-c    print the current language (if any)'
+    echo '-e    return the passed language extension'
+    echo '-E    return the current language extension'
+    echo '-h    print this message'
+    echo '-s    set the language for the day'
+}
+
+set_language () {
+    language=$1
+
+    if [[ -f $script_dir/../run-language/$language ]]; then
+        echo $language > .lang
+    else
+        echo Error: the selected language has not yet been configured >&2
+        exit 1
+    fi
+}
+
+extension_of () {
+    case $1 in
+        bash)           echo sh;;
+        spreadsheet)    echo xlsx;;
+        sql)            echo sql;;
+        pascal)         echo pas;;
+        r)              echo r;;
+        perl)           echo pl;;
+        clojure)        echo clj;;
+        php)            echo php;;
+        rust)           echo rs;;
+        javascript)     echo js;;
+        ruby)           echo rb;;
+        python)         echo py;;
+        java)           echo java;;
+        c)              echo c;;
+        c++)            echo cpp;;
+        j)              echo ijs;;
+        vimscript)      echo vim;;
+        fortran)        echo f;;
+    esac
+}
+
+language_of () {
+    case $1 in
+        sh)     echo bash;;
+        xlsx)   echo spreadsheet;;
+        sql)    echo sql;;
+        pas)    echo pascal;;
+        r)      echo r;;
+        pl)     echo perl;;
+        clj)    echo clojure;;
+        php)    echo php;;
+        rs)     echo rust;;
+        js)     echo javascript;;
+        rb)     echo ruby;;
+        py)     echo python;;
+        java)   echo java;;
+        c)      echo c;;
+        cpp)    echo c++;;
+        ijs)    echo j;;
+        vim)    echo vimscript;;
+        f)      echo fortran;;
+    esac
+}
+
+load_options() {
+    while getopts :ce:Ehs: opt; do
+        case "$opt" in
+            c)  current_only=true
+                ;;
+            e)  echo .$(extension_of $OPTARG)
+                exit 0
+                ;;
+            E)  [[ $language != '' ]] && echo .$(extension_of $language)
+                exit 0
+                ;;
+            s)  set_language $OPTARG
+                exit 0
+                ;;
+            h)  print_help
+                exit 0
+                ;;
+            *)  print_help
+                exit 1
+                ;;
+        esac
+    done
+}
+
+current_only=false
+
+[[ -f .lang ]] && language=$(< .lang)
+
+if ! ls part-[12].* &> /dev/null; then
+    echo Error: no solution found >&2
+    exit 1
+fi
+
+languages=()
+# Retrieve languages from the file extension
+for extension in $(ls part-[12].* | sed 's/.*\.\(.*\)$/\1/' | sort -u); do
+    l=$(language_of $extension)
+    languages+=($l)
+done
+
+if (( ${#languages[@]} == 1 )); then
+    language=${languages[0]}
+fi
+
+load_options "$@"
+
+if (( ${#languages[@]} < 1 )); then
+    echo Error: no language recognized >&2
+    exit 1
+fi
+
+if (( ${#languages[@]} == 1 )); then
+    echo $language
+else
+    for l in ${languages[@]}; do
+        if ! $current_only; then
+            echo $l $([[ $l != $language ]] || echo '(current)')
+        else
+            if [[ $l = $language ]]; then
+                echo $l
+            fi
+        fi
+    done
+fi
+
+if $current_only && [[ $language = '' ]]; then
+    echo Error: multiple languages detected >&2
+    echo "run the solutions with 'aoc run -l LANGUAGE'" >&2
+    echo "or set the current language for this day with 'aoc lang -s LANGUAGE'" >&2
+    exit 1
+fi

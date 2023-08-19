@@ -1,0 +1,68 @@
+#!/bin/bash -e
+
+script_dir=$(dirname "$BASH_SOURCE")
+
+print_help() {
+    echo 'usage: aoc run [-dh] [-p 1|2] [-l LANGUAGE]'
+    echo options:
+    echo '-p    part of the problem to run (1 or 2)'
+    echo '-l    language to use'
+    echo "-d    debug mode, uses the input file 'input.debug'"
+    echo '-h    print this message'
+}
+
+load_options() {
+    while getopts :dhl:p: flag; do
+        case "${flag}" in
+            d)  input_file='input.debug'
+                ;;
+            l)  language=$OPTARG
+                ;;
+            p)  part=$OPTARG
+                ;;
+            h)  print_help
+                exit 0
+                ;;
+            *)  print_help >&2
+                exit 1
+                ;;
+        esac
+    done
+}
+
+input_file=input
+
+load_options "$@"
+
+# Checks wether a solution script actually exist
+if ! ls part-[12].* &> /dev/null; then
+    echo Error: no solution found >&2
+    exit 1
+fi
+
+# Retrieves the current selected language (if not already specified)
+[[ -n $language ]] || language=$($script_dir/lang -c)
+extension=$($script_dir/lang -e $language)
+
+language_script=$script_dir/../run-language/$language
+if [[ ! -f $language_script ]]; then
+    echo "Error: '$language' is not supported yet" >&2
+    exit 1
+fi
+
+if [[ -z "$part" ]]; then
+    if [[ -f part-2$extension ]]; then
+        part=2
+    elif [[ -f part-1$extension ]]; then
+        part=1
+    else
+        echo "Error: no solution, written in '$language', found" >&2
+        exit 1
+    fi
+fi
+
+# Run the script with the input as stdin, passing as arguments the part to run and the input file
+$language_script $part $input_file < $input_file | pbcopy
+
+# Outputs the result, for debugging purposes
+pbpaste

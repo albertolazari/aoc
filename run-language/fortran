@@ -1,0 +1,5 @@
+#!/bin/bash -e
+if gfortran part-$1.f -o part-$1 &> compiler.log; then
+    rm *.mod &> /dev/null
+    ./part-$1
+fi

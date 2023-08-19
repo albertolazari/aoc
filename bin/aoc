@@ -7,8 +7,8 @@ print_help() {
     echo commands:
 
     local command
-    for command in "$script_dir"/../scripts/*.sh; do
-        echo "  $(basename ${command/.sh})"
+    for command in "$script_dir"/../command/*; do
+        echo "  $(basename $command)"
     done
     echo '  help'
 }
@@ -24,7 +24,7 @@ if [[ "$1" =~ ^[-]?[-]?help|^[-]?h ]]; then
 fi
 
 command="$1"
-script="$script_dir/../scripts/$command.sh"
+script="$script_dir/../command/$command"
 shift
 
 if [[ ! -f "$script" ]]; then

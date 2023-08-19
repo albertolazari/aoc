@@ -16,8 +16,7 @@ fi
 
 day=$(basename $PWD | sed "s/^$day_pattern//")
 
-if [[ ! -f $cookie ]]
-then
+if [[ ! -f $cookie ]]; then
     echo "Error: you need to copy your session in 'aoc/user-session'" >&2
     exit 1
 fi

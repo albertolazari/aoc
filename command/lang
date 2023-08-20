@@ -25,7 +25,7 @@ set_language () {
 
 extension_of () {
     case $1 in
-        bash)           echo sh;;
+        shell)          echo sh;;
         spreadsheet)    echo xlsx;;
         sql)            echo sql;;
         pascal)         echo pas;;
@@ -48,7 +48,7 @@ extension_of () {
 
 language_of () {
     case $1 in
-        sh)     echo bash;;
+        sh)     echo shell;;
         xlsx)   echo spreadsheet;;
         sql)    echo sql;;
         pas)    echo pascal;;

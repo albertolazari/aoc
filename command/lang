@@ -2,6 +2,28 @@
 
 script_dir=$(dirname $BASH_SOURCE)
 
+# List of all the languages and extensions
+supported_languages=(
+    shell.sh
+    spreadsheet.xlsx
+    sql.sql
+    pascal.pas
+    r.r
+    perl.pl
+    clojure.clj
+    php.php
+    rust.rs
+    javascript.js
+    ruby.rb
+    python.py
+    java.java
+    c.c
+    c++.cpp
+    j.ijs
+    vimscript.vim
+    fortran.f
+)
+
 print_help () {
     echo usage: lang [-cEh] [-s LANGUAGE] [-e LANGUAGE]
     echo options:
@@ -24,49 +46,25 @@ set_language () {
 }
 
 extension_of () {
-    case $1 in
-        shell)          echo sh;;
-        spreadsheet)    echo xlsx;;
-        sql)            echo sql;;
-        pascal)         echo pas;;
-        r)              echo r;;
-        perl)           echo pl;;
-        clojure)        echo clj;;
-        php)            echo php;;
-        rust)           echo rs;;
-        javascript)     echo js;;
-        ruby)           echo rb;;
-        python)         echo py;;
-        java)           echo java;;
-        c)              echo c;;
-        c++)            echo cpp;;
-        j)              echo ijs;;
-        vimscript)      echo vim;;
-        fortran)        echo f;;
-    esac
+    local ext=$(<<< "${supported_languages[@]}" grep -o "$1\.[^ ]*" | sed "s/$1\(\..*\)/\1/")
+
+    if [[ -z $ext ]]; then
+        echo "Error: '$1' is not supported yet" >&2
+        exit 1
+    fi
+
+    echo $ext
 }
 
 language_of () {
-    case $1 in
-        sh)     echo shell;;
-        xlsx)   echo spreadsheet;;
-        sql)    echo sql;;
-        pas)    echo pascal;;
-        r)      echo r;;
-        pl)     echo perl;;
-        clj)    echo clojure;;
-        php)    echo php;;
-        rs)     echo rust;;
-        js)     echo javascript;;
-        rb)     echo ruby;;
-        py)     echo python;;
-        java)   echo java;;
-        c)      echo c;;
-        cpp)    echo c++;;
-        ijs)    echo j;;
-        vim)    echo vimscript;;
-        f)      echo fortran;;
-    esac
+    local lang=$(<<< "${supported_languages[@]}" grep -o "[^ ]*\.$1" | sed "s/\(.*\)\.$1/\1/")
+
+    if [[ -z $lang ]]; then
+        echo "Error: extension '.$1' not recognized" >&2
+        exit 1
+    fi
+
+    echo $lang
 }
 
 load_options() {
@@ -74,10 +72,10 @@ load_options() {
         case "$opt" in
             c)  current_only=true
                 ;;
-            e)  echo .$(extension_of $OPTARG)
+            e)  extension_of $OPTARG
                 exit 0
                 ;;
-            E)  [[ $language != '' ]] && echo .$(extension_of $language)
+            E)  [[ $language != '' ]] && extension_of $language
                 exit 0
                 ;;
             s)  set_language $OPTARG

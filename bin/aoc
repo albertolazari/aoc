@@ -3,14 +3,12 @@
 script_dir="$(dirname "$(readlink -f "$BASH_SOURCE")")"
 
 print_help() {
-    echo 'usage: aoc <command> [args]'
+    echo 'usage: aoc <command> [command options]'
     echo commands:
-
-    local command
-    for command in "$script_dir"/../command/*; do
-        echo "  $(basename $command)"
-    done
-    echo '  help'
+    echo '  input   download the input file of the current day'
+    echo '  lang    print or set the language(s) of the solutions for the day'
+    echo '  run     run the solution in the current language'
+    echo '  help    print this message'
 }
 
 if [[ -z "$1" ]]; then

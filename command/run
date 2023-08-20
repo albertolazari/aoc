@@ -12,8 +12,8 @@ print_help() {
 }
 
 load_options() {
-    while getopts :dhl:p: flag; do
-        case "${flag}" in
+    while getopts :dhl:p: opt; do
+        case "$opt" in
             d)  input_file='input.debug'
                 ;;
             l)  language=$OPTARG
@@ -62,7 +62,4 @@ if [[ -z "$part" ]]; then
 fi
 
 # Run the script with the input as stdin, passing as arguments the part to run and the input file
-$language_script $part $input_file < $input_file | pbcopy
-
-# Outputs the result, for debugging purposes
-pbpaste
+$language_script $part $input_file < $input_file | tee >(tr -d '\n' | pbcopy)

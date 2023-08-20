@@ -1,2 +1,2 @@
-#!/bin/bashA -e
+#!/bin/bash -e
 clj -M part-$1.clj

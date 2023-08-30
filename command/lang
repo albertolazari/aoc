@@ -22,6 +22,7 @@ supported_languages=(
     j.ijs
     vimscript.vim
     fortran.f
+    erlang.erl
 )
 
 print_help () {

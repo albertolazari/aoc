@@ -1,0 +1,8 @@
+#!/bin/bash -eo pipefail
+cat part-$1.typ |
+    sed "s|^let input-file = \"/input\"$|let input-file = \"$(readlink -f $2)\"|" |
+    typst compile -f pdf --root / /dev/stdin /dev/stdout |
+    pdftotext - - |
+    tac |
+    tail -n +2 |
+    tac

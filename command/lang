@@ -23,6 +23,7 @@ supported_languages=(
     vimscript.vim
     fortran.f
     erlang.erl
+    typst.typ
 )
 
 print_help () {

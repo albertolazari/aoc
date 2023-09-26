@@ -48,7 +48,7 @@ set_language () {
 }
 
 extension_of () {
-    local ext=$(<<< "${supported_languages[@]}" grep -o "$1\.[^ ]*" | sed "s/$1\(\..*\)/\1/")
+    local ext=$(<<< "${supported_languages[@]}" grep -wo "$1\.[^ ]*" | sed "s/$1\(\..*\)/\1/")
 
     if [[ -z $ext ]]; then
         echo "Error: '$1' is not supported yet" >&2
@@ -59,7 +59,7 @@ extension_of () {
 }
 
 language_of () {
-    local lang=$(<<< "${supported_languages[@]}" grep -o "[^ ]*\.$1" | sed "s/\(.*\)\.$1/\1/")
+    local lang=$(<<< "${supported_languages[@]}" grep -wo "[^ ]*\.$1" | sed "s/\(.*\)\.$1/\1/")
 
     if [[ -z $lang ]]; then
         echo "Error: extension '.$1' not recognized" >&2

@@ -1,0 +1,6 @@
+#!/bin/bash -e
+if rustc part-$1.rs &> compiler.log; then
+    ./part-$1
+else
+    cat compiler.log >&2
+fi
